@@ -9,6 +9,31 @@
 L3 — ECR private repositories + pull-through cache for public registries.
 Provisioned once per account, before any cluster or CI pipeline pulls images.
 
+## Where It Fits
+
+**Architecture layer:** L3 — Container Registry
+**Provisioned by:** Run once per AWS account before any CI/CD pipeline pushes images
+**State key:** `workload/<mode>/<env>/ecr/terraform.tfstate` (planned; not yet wired into provision-eks.yml)
+**Consumed by:** All EKS node groups (pull-through cache); CI/CD pipelines (push to private repos)
+
+## How to Use
+
+Not yet wired into the release pipeline. Run manually once per account after the account is set up:
+
+```bash
+terraform init \
+  -backend-config="bucket=<TF_STATE_BUCKET>" \
+  -backend-config="key=ecr/terraform.tfstate" \
+  -backend-config="region=us-east-1" \
+  -backend-config="use_lockfile=true"
+
+terraform apply -var-file=envs/prod.tfvars
+```
+
+After apply, attach `node_pull_policy_arn` to EKS node IAM roles (this will be automated when wired into `provision-eks.yml`).
+
+Pending: add `docker.io` and `ghcr.io` credentials to Secrets Manager and reference them in `pull_through_cache_credentials` in the tfvars.
+
 ## Module Structure
 
 ```
