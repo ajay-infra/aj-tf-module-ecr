@@ -84,7 +84,7 @@ terraform apply -var-file=envs/dev.tfvars
 
 ```hcl
 module "ecr" {
-  source = "github.com/ajay-infra/aj-tf-module-ecr?ref=v0.1.0"
+  source = "github.com/ajay-infra/aj-tf-module-ecr?ref=v1.0.0"
 
   aws_account_id = "123456789012"
   environment    = "dev"
@@ -96,7 +96,7 @@ module "ecr" {
 
 ```hcl
 module "ecr" {
-  source = "github.com/ajay-infra/aj-tf-module-ecr?ref=v0.1.0"
+  source = "github.com/ajay-infra/aj-tf-module-ecr?ref=v1.0.0"
 
   aws_account_id = "123456789012"
   environment    = "prod"
@@ -191,5 +191,5 @@ Same pattern for `ghcr.io` using a GitHub fine-grained PAT with `read:packages` 
 
 | Tool | Version |
 |---|---|
-| Terraform | `= 1.7.5` |
+| Terraform | `= 1.10.5` |
 | AWS provider | `= 5.100.0` |

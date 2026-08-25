@@ -1,14 +1,18 @@
 # skills.md — aj-tf-module-ecr
 
 ## Purpose
-Provisions ECR repositories with image scanning, lifecycle policies, and cross-account access for multi-env image promotion pipelines.
+Provisions ECR repositories with image scanning, lifecycle policies, and pull-through
+cache rules for public registries (docker.io, quay.io, ghcr.io, registry.k8s.io,
+public.ecr.aws). One account, one set of repos — not per-cluster. No cross-account
+repository access exists in this module; the repository policy only grants pull access
+to node IAM role ARNs within the same account.
 
 ## Type
 `tf-module`
 
 ## Stable ref
 ```
-source = "github.com/ajaylakma/aj-tf-module-ecr?ref=ecr-01"
+source = "github.com/ajay-infra/aj-tf-module-ecr?ref=v1.0.0"
 ```
 
 ## Key inputs
@@ -22,11 +26,13 @@ source = "github.com/ajaylakma/aj-tf-module-ecr?ref=ecr-01"
 | `lifecycle_tagged_count` | Max tagged images to retain |
 
 ## AWS tags applied
-`Env`, `Team`, `ManagedBy`, `CostCenter`, `Model`, `Customer`
+`Project`, `ManagedBy`, `Repository`, `Environment`, `Team`, `CostCenter` (set in
+`locals.full_tags`), plus whatever's in `var.tags`. No `Env`, `Model`, or `Customer`
+tag exists in this module.
 
 ## Branching convention
 - `main` — active development
-- `ecr-01` — stable pinned release
+- semver tags (`v1.0.0`, ...) — stable pinned releases, per `README.md` usage examples
 
 ## CI checks
 fmt, validate, plan (dry-run), tfsec/checkov
