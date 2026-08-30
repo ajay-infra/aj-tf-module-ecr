@@ -123,10 +123,10 @@ terraform apply -var-file=envs/dev.tfvars
 
 ## OPA allowed-registries policy
 
-Update the `allowed-registries` OPA Gatekeeper constraint in `k8s-manifests` to permit your ECR registry and all pull-through cache prefixes:
+Update the `allowed-registries` OPA Gatekeeper constraint in `aj-cluster-baseline` to permit your ECR registry and all pull-through cache prefixes:
 
 ```yaml
-# k8s-manifests/constraints/allowed-registries.yaml
+# aj-cluster-baseline/constraints/allowed-registries.yaml
 spec:
   parameters:
     allowedRegistries:
