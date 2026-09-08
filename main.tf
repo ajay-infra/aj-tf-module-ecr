@@ -57,8 +57,19 @@ resource "aws_ecr_pull_through_cache_rule" "registry" {
 # Attach this policy to the EKS node IAM role (via aj-infra-platform Pod Identity
 # or directly on the node role) to allow pulling from ECR.
 #
-# ecr:CreateRepository is required for pull-through cache — ECR auto-creates the
-# cached repository namespace on the first pull from an upstream registry.
+# Pull-through cache needs TWO permissions beyond a normal pull, and granting
+# only one of them fails in a way nothing catches until a real first pull:
+#
+#   ecr:CreateRepository        ECR auto-creates the cached repository namespace
+#                               the first time an image is pulled through it.
+#   ecr:BatchImportUpstreamImage  copies the image from the upstream registry
+#                               into that repository. WITHOUT THIS, the first
+#                               pull of any uncached image is denied — and every
+#                               pull is a first pull until the cache warms.
+#
+# The second was missing. The comment above it explained why the first was
+# needed and stopped one action short, which is why the gap survived: the
+# reasoning was written down and was half complete.
 
 resource "aws_iam_policy" "ecr_node_pull" {
   name        = "${var.environment}-ecr-node-pull"
@@ -87,9 +98,12 @@ resource "aws_iam_policy" "ecr_node_pull" {
         Resource = "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/*"
       },
       {
-        Sid      = "ECRPullThroughCacheCreateRepo"
-        Effect   = "Allow"
-        Action   = "ecr:CreateRepository"
+        Sid    = "ECRPullThroughCache"
+        Effect = "Allow"
+        Action = [
+          "ecr:CreateRepository",
+          "ecr:BatchImportUpstreamImage",
+        ]
         Resource = "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/*"
       },
     ]
