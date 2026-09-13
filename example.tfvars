@@ -32,5 +32,5 @@ registries_to_cache = [
 # Add docker.io and ghcr.io creds in envs/*.tfvars using real Secrets Manager ARNs.
 pull_through_cache_credentials = {}
 
-team        = "infra-core"
+team        = "team-0001"   # a team code — aj-infra/envs/org/teams.yaml
 cost_center = "infra-2026-q1"
